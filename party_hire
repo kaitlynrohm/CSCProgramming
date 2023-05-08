@@ -1,3 +1,75 @@
 #Kaitlyn Rohm
 #This is my first internal for Computer science
 #This program will help Julie's party hire keep track of purchases
+
+#Seting up tkinter
+from tkinter import *
+from tkinter import ttk
+
+#main window
+root = Tk()
+
+#setting up frames (creation and placement)
+frame1 = Frame(root)
+frame1.place(x= 0,y= 0)
+for i in range(0, 6):
+    frame1.columnconfigure(i, minsize=150)
+
+frame2 = Frame(root)
+frame2.place(x=0, y=500)
+for i in range(0, 8):
+    frame2.columnconfigure(i, minsize=150)
+
+#Creating constant labels and giving the page a title
+root.title("Julie's Party Hire")
+title = Label(frame1, text="Julie's Party Hire", font=(("Gorgia"), 20)) #Main title
+lblorder = Label(frame1, text="Date ordered", font=(("Gorgia"), 16))
+lblhire = Label(frame1, text="Date hired", font=(("Gorgia"), 16))
+lblname = Label(frame1, text="Full name", font=(("Gorgia"), 16))
+lblitem = Label(frame1, text="Item hired", font=(("Gorgia"), 16))
+lblreceipt = Label(frame1, text="Receipt number", font=(("Gorgia"), 16))
+lblnum = Label(frame1, text="Item amount", font=(("Gorgia"), 16))
+
+dorder = Label(frame1, text="Date ordered", font=(("Gorgia"), 14))
+dhire = Label(frame1, text="Date hired", font=(("Gorgia"), 14))
+dname = Label(frame1, text="Full name", font=(("Gorgia"), 14))
+ditem = Label(frame1, text="Item hired", font=(("Gorgia"), 14))
+dreceipt = Label(frame1, text="Receipt", font=(("Gorgia"), 14))
+dnum = Label(frame1, text="Item amount", font=(("Gorgia"), 14))
+
+#Creating entry boxes
+order = Entry(frame1, font=(("Gorgia"), 14), width=12)
+order.insert(0, "DD/MM/YY")   #Entry box will contain text
+hire = Entry(frame1, font=(("Gorgia"), 14), width=12)
+hire.insert(0, "DD/MM/YY")
+name = Entry(frame1, font=(("Gorgia"), 14), width=12)
+item = Entry(frame1, font=(("Gorgia"), 14), width=12)
+receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
+num = Entry(frame1, font=(("Gorgia"), 14), width=12)
+
+#placing all the labels
+title.grid(row=0, column=5, columnspan=2)
+lblorder.grid(row=1, column=0)
+lblhire.grid(row=1, column=2)
+lblname.grid(row=2, column=0)
+lblitem.grid(row=2, column=2)
+lblreceipt.grid(row=3, column=0)
+lblnum.grid(row=3, column=2)
+
+dorder.grid(row=5, column=0)
+dhire.grid(row=5, column=1)
+dname.grid(row=5, column=2)
+dreceipt.grid(row=5, column=3)
+ditem.grid(row=5, column=4)
+dnum.grid(row=5, column=5)
+
+#Placeing the entry boxes
+order.grid(row=1, column=1)
+hire.grid(row=1, column=3)
+name.grid(row=2, column=1)
+item.grid(row=2, column=3)
+receipt.grid(row=3,column=1)
+num.grid(row=3, column=3)
+
+root.geometry("2000x1000")
+root.mainloop()

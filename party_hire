@@ -12,13 +12,21 @@ root = Tk()
 #setting up frames (creation and placement)
 frame1 = Frame(root)
 frame1.place(x= 0,y= 0)
-for i in range(0, 6):
+for i in range(0, 7):
     frame1.columnconfigure(i, minsize=150)
 
 frame2 = Frame(root)
 frame2.place(x=0, y=500)
 for i in range(0, 8):
     frame2.columnconfigure(i, minsize=150)
+
+#Variables and lists (global)
+#Items for hire (drop list)
+droplist = ["Tables", "Chairs", "Plates", "String lights", "Cutlery", "Plates", "Bowls"]
+clicked = StringVar()
+
+#Functions
+
 
 #Creating constant labels and giving the page a title
 root.title("Julie's Party Hire")
@@ -43,9 +51,11 @@ order.insert(0, "DD/MM/YY")   #Entry box will contain text
 hire = Entry(frame1, font=(("Gorgia"), 14), width=12)
 hire.insert(0, "DD/MM/YY")
 name = Entry(frame1, font=(("Gorgia"), 14), width=12)
-item = Entry(frame1, font=(("Gorgia"), 14), width=12)
 receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
 num = Entry(frame1, font=(("Gorgia"), 14), width=12)
+
+#Creating button
+enter = Button(frame1, text="Enter", font=(("Gorgia"), 14), bg="Green")
 
 #placing all the labels
 title.grid(row=0, column=5, columnspan=2)
@@ -63,13 +73,21 @@ dreceipt.grid(row=5, column=3)
 ditem.grid(row=5, column=4)
 dnum.grid(row=5, column=5)
 
+#Dropdown list
+dropdown = OptionMenu(frame1, clicked, *droplist)
+
 #Placeing the entry boxes
 order.grid(row=1, column=1)
 hire.grid(row=1, column=3)
 name.grid(row=2, column=1)
-item.grid(row=2, column=3)
 receipt.grid(row=3,column=1)
 num.grid(row=3, column=3)
+
+#Placing buton
+enter.grid(row=4, column=6)
+
+#placeing dropdown list
+dropdown.grid(row=2, column=3)
 
 root.geometry("2000x1000")
 root.mainloop()

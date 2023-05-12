@@ -16,7 +16,7 @@ for i in range(0, 7):
     frame1.columnconfigure(i, minsize=150)
 
 frame2 = Frame(root)
-frame2.place(x=0, y=500)
+frame2.place(x=0, y=200)
 for i in range(0, 8):
     frame2.columnconfigure(i, minsize=150)
 
@@ -24,8 +24,36 @@ for i in range(0, 8):
 #Items for hire (drop list)
 droplist = ["Tables", "Chairs", "Plates", "String lights", "Cutlery", "Plates", "Bowls"]
 clicked = StringVar()
+identify = -1    #For indentifying which group (-1 so that id = row)
+info = []   #List for information
 
 #Functions
+def entered():
+    global identify
+    identify +=1
+    btn = identify  #Is whichever row its in
+    info.append(
+        [btn, [
+            Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
+            Label(frame2, text=hire.get(), font=(("Gorgia"), 14)),
+            Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
+            Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
+            Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
+            Label(frame2, text=num.get(), font=(("Gorgia"), 14))
+            ]
+        ]
+    )
+    #Putting everything on the grid
+    for y in range(len(info[-1][1])):
+        info[-1][1][y].grid(row=len(info), column=y, sticky=W)
+    #Resets all inputs except for the dropdown list
+    order.delete(0, END)
+    order.insert(0, "DD/MM/YY")
+    hire.delete(0,END)
+    hire.insert(0, "DD/MM/YY")
+    name.delete(0, END)
+    receipt.delete(0, END)
+    num.delete(0, END)
 
 
 #Creating constant labels and giving the page a title
@@ -55,39 +83,39 @@ receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
 num = Entry(frame1, font=(("Gorgia"), 14), width=12)
 
 #Creating button
-enter = Button(frame1, text="Enter", font=(("Gorgia"), 14), bg="Green")
-
-#placing all the labels
-title.grid(row=0, column=5, columnspan=2)
-lblorder.grid(row=1, column=0)
-lblhire.grid(row=1, column=2)
-lblname.grid(row=2, column=0)
-lblitem.grid(row=2, column=2)
-lblreceipt.grid(row=3, column=0)
-lblnum.grid(row=3, column=2)
-
-dorder.grid(row=5, column=0)
-dhire.grid(row=5, column=1)
-dname.grid(row=5, column=2)
-dreceipt.grid(row=5, column=3)
-ditem.grid(row=5, column=4)
-dnum.grid(row=5, column=5)
+enter = Button(frame1, text="Enter", font=(("Gorgia"), 14), bg="Green", command=entered)
 
 #Dropdown list
 dropdown = OptionMenu(frame1, clicked, *droplist)
 
+#placing all the labels
+title.grid(row=0, column=3, columnspan=2)
+lblorder.grid(row=1, column=0, sticky=W)
+lblhire.grid(row=1, column=2, sticky=W)
+lblname.grid(row=2, column=0, sticky=W)
+lblitem.grid(row=2, column=2, sticky=W)
+lblreceipt.grid(row=3, column=0, sticky=W)
+lblnum.grid(row=3, column=2, sticky=W)
+
+dorder.grid(row=5, column=0, sticky=W)
+dhire.grid(row=5, column=1, sticky=W)
+dname.grid(row=5, column=2, sticky=W)
+dreceipt.grid(row=5, column=3, sticky=W)
+ditem.grid(row=5, column=4, sticky=W)
+dnum.grid(row=5, column=5, sticky=W)
+
 #Placeing the entry boxes
-order.grid(row=1, column=1)
-hire.grid(row=1, column=3)
-name.grid(row=2, column=1)
-receipt.grid(row=3,column=1)
-num.grid(row=3, column=3)
+order.grid(row=1, column=1, sticky=W)
+hire.grid(row=1, column=3, sticky=W)
+name.grid(row=2, column=1, sticky=W)
+receipt.grid(row=3,column=1, sticky=W)
+num.grid(row=3, column=3, sticky=W)
 
 #Placing buton
-enter.grid(row=4, column=6)
+enter.grid(row=4, column=6, sticky=W)
 
 #placeing dropdown list
-dropdown.grid(row=2, column=3)
+dropdown.grid(row=2, column=3, sticky=W)
 
-root.geometry("2000x1000")
+root.geometry("2000x700")
 root.mainloop()

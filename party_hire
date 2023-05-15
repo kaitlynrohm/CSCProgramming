@@ -22,10 +22,19 @@ for i in range(0, 8):
 
 #Variables and lists (global)
 #Items for hire (drop list)
-droplist = ["Tables", "Chairs", "Plates", "String lights", "Cutlery", "Plates", "Bowls"]
+droplist = ["Select an option", "Tables", "Chairs", "Plates", "String lights", "Cutlery", "Plates", "Bowls"]
 clicked = StringVar()
+clicked.set(droplist[0])
 identify = -1    #For indentifying which group (-1 so that id = row)
 info = []   #List for information
+
+def reset():
+    order.delete(0, END)
+    hire.delete(0,END)
+    name.delete(0,END)
+    receipt.delete(0, END)
+    num.delete(0, END)
+    clicked.set(droplist[0])
 
 #Functions
 def entered():
@@ -39,7 +48,9 @@ def entered():
             Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
             Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
             Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=num.get(), font=(("Gorgia"), 14))
+            Label(frame2, text=num.get(), font=(("Gorgia"), 14)),
+            Button(frame2, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
+            Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: edit(g))
             ]
         ]
     )
@@ -47,14 +58,26 @@ def entered():
     for y in range(len(info[-1][1])):
         info[-1][1][y].grid(row=len(info), column=y, sticky=W)
     #Resets all inputs except for the dropdown list
-    order.delete(0, END)
+    reset()
     order.insert(0, "DD/MM/YY")
-    hire.delete(0,END)
     hire.insert(0, "DD/MM/YY")
-    name.delete(0, END)
-    receipt.delete(0, END)
-    num.delete(0, END)
 
+def edit(i):
+    #This will allow Julie to edit the orders she's already logged
+    reset()
+    toedit = [] #Stores all the inputed values from list
+    #This gives the previously inputed values
+    for y in range(0, 6):
+        toedit.append(info[i][1][y].cget("text"))
+    order.insert(0, toedit[0])
+    hire.insert(0, toedit[1])
+    name.insert(0, toedit[2])
+    receipt.insert(0, toedit[3])
+    clicked.set(toedit[4])
+    num.insert(0, toedit[5])
+    
+
+        
 
 #Creating constant labels and giving the page a title
 root.title("Julie's Party Hire")

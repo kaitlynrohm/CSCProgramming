@@ -40,7 +40,7 @@ def reset():
 def entered():
     global identify
     identify +=1
-    btn = identify  #Is whichever row its in
+    btn = identify  #Is whichever row its in and helps with identifying later on
     info.append(
         [btn, [
             Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
@@ -50,16 +50,17 @@ def entered():
             Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
             Label(frame2, text=num.get(), font=(("Gorgia"), 14)),
             Button(frame2, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
-            Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: edit(g))
+            Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: returned(g))
+            #The buttons each place btn (indentifier) into a variable to use in edit and return. (identifies it)
             ]
         ]
     )
     #Putting everything on the grid
     for y in range(len(info[-1][1])):
         info[-1][1][y].grid(row=len(info), column=y, sticky=W)
-    #Resets all inputs except for the dropdown list
+    #Resets all inputs
     reset()
-    order.insert(0, "DD/MM/YY")
+    order.insert(0, "DD/MM/YY") 
     hire.insert(0, "DD/MM/YY")
 
 def updated(p):
@@ -84,16 +85,38 @@ def edit(i):
     #This gives the previously inputed values
     for y in range(0, 6):
         toedit.append(info[i][1][y].cget("text"))
+    #This places previously inputed values into the entry boxes and drop down list
     order.insert(0, toedit[0])
     hire.insert(0, toedit[1])
     name.insert(0, toedit[2])
     receipt.insert(0, toedit[3])
     clicked.set(toedit[4])
     num.insert(0, toedit[5])
+    #Changes the enter button to update button
     enter.grid_forget()
     global update
     update = Button(frame1, text="Update", font=(("Gorgia"), 14), bg="Yellow", command=lambda: updated(place))
     update.grid(row=4, column=6, sticky=W)
+
+def returned(r):
+    #This will allow Jullie to return (and as such delete) orders
+    back = int(r)   #This is to make the number an integer
+    for i in info:
+        index = info.index(i)   #This gets the index of the current group
+        if back == i[0]:
+            for a in range(0, 8):
+                info[index][1][a].destroy() #This destroys the desired index 
+        elif back < index:
+            info[index][0] = index - 1  #This updates the identifying part of the list
+    del info[back]     #Deletes the group from the list
+    #Allows the next entered values to have the correct btn number
+    global identify
+    identify -= 1
+    #Moves all labels into correct positions
+    for y in range(len(info)):
+        if back <= y:
+            for t in range(len(info[-1][1])):
+                info[y][1][t].grid(row=y + 1, column=t, sticky=W)
 
 #Creating constant labels and giving the page a title
 root.title("Julie's Party Hire")

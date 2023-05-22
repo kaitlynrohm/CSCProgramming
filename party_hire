@@ -39,8 +39,8 @@ def validity():
             if i == "DD/MM/YY": #Checks the date has been changed
                 errors.append("You must include an order date.")        
         elif index == 1:
-            if i == "":
-                errors.append("You must include the date they hire it on")
+            if i == "DD/MM/YY":
+                errors.append("You must include the date they want the item (hire date).")
         elif index == 2:
             if i == "":
                 errors.append("You cannot leave the name blank.")
@@ -49,38 +49,41 @@ def validity():
                 errors.append("You cannot leave the receipt number blank.")
             else:
                 try:
-                    isint = int(i.index[3])
+                    isint = int(i)
                 except:
                     errors.append("The receipt number must be an integer.")
         elif index == 4:
-            if i == "":
+            if i == "Select an option":
                 errors.append("You must select an item being hired.")
         elif index == 5:
             if i == "":
                 errors.append("You cannot leave the number of items hired blank.")
             else:
                 try:
-                    isint = int(i.index[5])
+                    isint = int(i)
                     if isint < 1 or isint > 500:
                         errors.append("You cannot hire more than 500 or less then 1.")
                 except:
-                    errors.append("The number of items hired must be an integer.)")
+                    errors.append("The number of items hired must be an integer.")
         else:
                 errors.append("Something has gone wrong")
         index += 1
 
 def error():
+    #This is a pop up window that shows all of the errors
     top = Toplevel(root)
-    top.geometry("500x500")
-    title = Label(top, text="Your entry has the following errors", font=(("Gorgia"),16))
-    title.grid(row=0, column=0)
-    labels = []
+    top.geometry("500x250")
+    title = Label(top, text="Your entry has the following errors", font=(("Gorgia"),18), bg="Yellow")
+    title.grid(row=0, column=0, sticky=W+E) #Griding a title
+    global errors
+    labels = [] #Allows me to easily grid all of the labels
     for i in errors:
         labels.append(Label(top, text=i, font=(("Gorgia"), 14)))
     for v in range(len(labels)):
-        labels[v].grid(row=v + 1, column=0)
-    ok = Button(top, text="OK", command= top.destroy())
+        labels[v].grid(row=v + 1, column=0, sticky=W)
+    ok = Button(top, text="OK", command= lambda: top.destroy())
     ok.grid(row= 10, column=0)
+    errors = []
         
 
 def reset():
@@ -95,7 +98,7 @@ def entered():
     global identify
     identify +=1
     btn = identify  #Is whichever row its in and helps with identifying later on
-    #validity()
+    validity()  #Checkes the validity of all the entries
     global errors
     if errors == []:
         info.append(
@@ -123,18 +126,22 @@ def entered():
         error() #This is the pop up window function which will show the errors in the inputs
 
 def updated(p):
-    #This will update the list
-    info[p][1][0].config(text = order.get())
-    info[p][1][1].config(text = hire.get())
-    info[p][1][2].config(text = name.get())
-    info[p][1][3].config(text = receipt.get())
-    info[p][1][4].config(text = clicked.get())
-    info[p][1][5].config(text = num.get())
-    reset()
-    order.insert(0, "DD/MM/YY")
-    hire.insert(0, "DD/MM/YY")
-    update.grid_forget()
-    enter.grid(row=4, column=6, sticky=W)
+    validity()
+    if errors == []:
+        #This will update the list
+        info[p][1][0].config(text = order.get())
+        info[p][1][1].config(text = hire.get())
+        info[p][1][2].config(text = name.get())
+        info[p][1][3].config(text = receipt.get())
+        info[p][1][4].config(text = clicked.get())
+        info[p][1][5].config(text = num.get())
+        reset()
+        order.insert(0, "DD/MM/YY")
+        hire.insert(0, "DD/MM/YY")
+        update.grid_forget()
+        enter.grid(row=4, column=6, sticky=W)
+    else:
+        error()
 
 def edit(e):
     #This will allow Julie to edit the orders she's already logged
@@ -170,9 +177,6 @@ def returned(r):
             for a in range(0, 8):
                 info[index][1][a].destroy() #This destroys the desired index 
     del info[back]     #Deletes the group from the list
-    #Allows the next entered values to have the correct btn number
-    global identify
-    identify -= 1
     #Moves all labels into correct positions
     for y in range(len(info)):
         if back <= y:

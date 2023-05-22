@@ -27,6 +27,61 @@ clicked = StringVar()
 clicked.set(droplist[0])
 identify = -1    #For indentifying which group (-1 so that id = row)
 info = []   #List for information
+errors = []
+
+#Functions
+def validity():
+    #Add max characters for inputs
+    checking = [order.get(), hire.get(), name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
+    index = 0
+    for i in checking:
+        if index == 0:
+            if i == "DD/MM/YY": #Checks the date has been changed
+                errors.append("You must include an order date.")        
+        elif index == 1:
+            if i == "":
+                errors.append("You must include the date they hire it on")
+        elif index == 2:
+            if i == "":
+                errors.append("You cannot leave the name blank.")
+        elif index == 3:
+            if i == "":
+                errors.append("You cannot leave the receipt number blank.")
+            else:
+                try:
+                    isint = int(i.index[3])
+                except:
+                    errors.append("The receipt number must be an integer.")
+        elif index == 4:
+            if i == "":
+                errors.append("You must select an item being hired.")
+        elif index == 5:
+            if i == "":
+                errors.append("You cannot leave the number of items hired blank.")
+            else:
+                try:
+                    isint = int(i.index[5])
+                    if isint < 1 or isint > 500:
+                        errors.append("You cannot hire more than 500 or less then 1.")
+                except:
+                    errors.append("The number of items hired must be an integer.)")
+        else:
+                errors.append("Something has gone wrong")
+        index += 1
+
+def error():
+    top = Toplevel(root)
+    top.geometry("500x500")
+    title = Label(top, text="Your entry has the following errors", font=(("Gorgia"),16))
+    title.grid(row=0, column=0)
+    labels = []
+    for i in errors:
+        labels.append(Label(top, text=i, font=(("Gorgia"), 14)))
+    for v in range(len(labels)):
+        labels[v].grid(row=v + 1, column=0)
+    ok = Button(top, text="OK", command= top.destroy())
+    ok.grid(row= 10, column=0)
+        
 
 def reset():
     order.delete(0, END)
@@ -36,32 +91,36 @@ def reset():
     num.delete(0, END)
     clicked.set(droplist[0])
 
-#Functions
 def entered():
     global identify
     identify +=1
     btn = identify  #Is whichever row its in and helps with identifying later on
-    info.append(
-        [btn, [
-            Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=hire.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
-            Label(frame2, text=num.get(), font=(("Gorgia"), 14)),
-            Button(frame2, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
-            Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: returned(g))
-            #The buttons each place btn (indentifier) into a variable to use in edit and return. (identifies it)
+    #validity()
+    global errors
+    if errors == []:
+        info.append(
+            [btn, [
+                Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
+                 Label(frame2, text=hire.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=num.get(), font=(("Gorgia"), 14)),
+                Button(frame2, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
+                    Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: returned(g))
+                #The buttons each place btn (indentifier) into a variable to use in edit and return. (identifies it)
+                ]
             ]
-        ]
-    )
-    #Putting everything on the grid
-    for y in range(len(info[-1][1])):
-        info[-1][1][y].grid(row=len(info), column=y, sticky=W)
-    #Resets all inputs
-    reset()
-    order.insert(0, "DD/MM/YY") 
-    hire.insert(0, "DD/MM/YY")
+        )
+        #Putting everything on the grid
+        for y in range(len(info[-1][1])):
+            info[-1][1][y].grid(row=len(info), column=y, sticky=W)
+        #Resets all inputs
+        reset()
+        order.insert(0, "DD/MM/YY") 
+        hire.insert(0, "DD/MM/YY")
+    else:
+        error() #This is the pop up window function which will show the errors in the inputs
 
 def updated(p):
     #This will update the list
@@ -77,10 +136,13 @@ def updated(p):
     update.grid_forget()
     enter.grid(row=4, column=6, sticky=W)
 
-def edit(i):
+def edit(e):
     #This will allow Julie to edit the orders she's already logged
     reset()
-    place = i
+    for y,x in enumerate(info):
+        if x[0] == e:
+            i = y
+            print(i)
     toedit = [] #Stores all the inputed values from list
     #This gives the previously inputed values
     for y in range(0, 6):
@@ -95,10 +157,11 @@ def edit(i):
     #Changes the enter button to update button
     enter.grid_forget()
     global update
-    update = Button(frame1, text="Update", font=(("Gorgia"), 14), bg="Yellow", command=lambda: updated(place))
+    update = Button(frame1, text="Update", font=(("Gorgia"), 14), bg="Yellow", command=lambda: updated(i))
     update.grid(row=4, column=6, sticky=W)
 
 def returned(r):
+    #Reset update to enter
     #This will allow Jullie to return (and as such delete) orders
     back = int(r)   #This is to make the number an integer
     for i in info:
@@ -106,8 +169,6 @@ def returned(r):
         if back == i[0]:
             for a in range(0, 8):
                 info[index][1][a].destroy() #This destroys the desired index 
-        elif back < index:
-            info[index][0] = index - 1  #This updates the identifying part of the list
     del info[back]     #Deletes the group from the list
     #Allows the next entered values to have the correct btn number
     global identify

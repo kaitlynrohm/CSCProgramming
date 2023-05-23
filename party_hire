@@ -5,6 +5,7 @@
 #Seting up tkinter
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import askyesno #Allows confirmation to happen
 
 #main window
 root = Tk()
@@ -30,6 +31,12 @@ info = []   #List for information
 errors = []
 
 #Functions
+
+def confirm(button):
+    #This double checks with the user whether or not they want to go through with an action
+    global answer
+    answer = askyesno(title="Confirmation", message=f"Are you sure you want to {button} this")
+
 def validity():
     #Add max characters for inputs
     checking = [order.get(), hire.get(), name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
@@ -72,7 +79,7 @@ def validity():
 def error():
     #This is a pop up window that shows all of the errors
     top = Toplevel(root)
-    top.geometry("500x250")
+    top.geometry("500x350")
     title = Label(top, text="Your entry has the following errors", font=(("Gorgia"),18), bg="Yellow")
     title.grid(row=0, column=0, sticky=W+E) #Griding a title
     global errors
@@ -96,11 +103,13 @@ def reset():
 
 def entered():
     global identify
+    global answer   #Uses previously defined answer
     identify +=1
     btn = identify  #Is whichever row its in and helps with identifying later on
     validity()  #Checkes the validity of all the entries
+    confirm("enter")   #Double checks they want to do something
     global errors
-    if errors == []:
+    if errors == [] and answer:
         info.append(
             [btn, [
                 Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
@@ -122,12 +131,13 @@ def entered():
         reset()
         order.insert(0, "DD/MM/YY") 
         hire.insert(0, "DD/MM/YY")
-    else:
+    elif errors != [] and answer:
         error() #This is the pop up window function which will show the errors in the inputs
 
 def updated(p):
     validity()
-    if errors == []:
+    confirm("update")
+    if errors == [] and answer:
         #This will update the list
         info[p][1][0].config(text = order.get())
         info[p][1][1].config(text = hire.get())
@@ -138,9 +148,9 @@ def updated(p):
         reset()
         order.insert(0, "DD/MM/YY")
         hire.insert(0, "DD/MM/YY")
-        update.grid_forget()
+        update.destroy()
         enter.grid(row=4, column=6, sticky=W)
-    else:
+    elif errors != []:
         error()
 
 def edit(e):
@@ -168,20 +178,27 @@ def edit(e):
     update.grid(row=4, column=6, sticky=W)
 
 def returned(r):
-    #Reset update to enter
     #This will allow Jullie to return (and as such delete) orders
-    back = int(r)   #This is to make the number an integer
-    for i in info:
-        index = info.index(i)   #This gets the index of the current group
-        if back == i[0]:
-            for a in range(0, 8):
-                info[index][1][a].destroy() #This destroys the desired index 
-    del info[back]     #Deletes the group from the list
-    #Moves all labels into correct positions
-    for y in range(len(info)):
-        if back <= y:
-            for t in range(len(info[-1][1])):
-                info[y][1][t].grid(row=y + 1, column=t, sticky=W)
+    confirm("reutrn")
+    if answer:
+        #Ensures the program still functions if you return what you're trying to edit
+        update.gridforget()
+        enter.grid(row=4, column=6, sticky=W)
+        reset()
+        order.insert(0, "DD/MM/YY") 
+        hire.insert(0, "DD/MM/YY")
+        back = int(r)   #This is to make the number an integer
+        for i in info:
+            index = info.index(i)   #This gets the index of the current group
+            if back == i[0]:
+                for a in range(0, 8):
+                    info[index][1][a].destroy() #This destroys the desired index 
+        del info[back]     #Deletes the group from the list
+        #Moves all labels into correct positions
+        for y in range(len(info)):
+            if back <= y:
+                for t in range(len(info[-1][1])):
+                    info[y][1][t].grid(row=y + 1, column=t, sticky=W)
 
 #Creating constant labels and giving the page a title
 root.title("Julie's Party Hire")

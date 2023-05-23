@@ -6,6 +6,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import askyesno #Allows confirmation to happen
+import datetime as dt
 
 #main window
 root = Tk()
@@ -29,9 +30,10 @@ clicked.set(droplist[0])
 identify = -1    #For indentifying which group (-1 so that id = row)
 info = []   #List for information
 errors = []
+#Current date
+date = dt.datetime.now()
 
 #Functions
-
 def confirm(button):
     #This double checks with the user whether or not they want to go through with an action
     global answer
@@ -39,19 +41,16 @@ def confirm(button):
 
 def validity():
     #Add max characters for inputs
-    checking = [order.get(), hire.get(), name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
+    checking = [ hire.get(), name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
     index = 0
-    for i in checking:
+    for i in checking:       
         if index == 0:
-            if i == "DD/MM/YY": #Checks the date has been changed
-                errors.append("You must include an order date.")        
-        elif index == 1:
             if i == "DD/MM/YY":
                 errors.append("You must include the date they want the item (hire date).")
-        elif index == 2:
+        elif index == 1:
             if i == "":
                 errors.append("You cannot leave the name blank.")
-        elif index == 3:
+        elif index == 2:
             if i == "":
                 errors.append("You cannot leave the receipt number blank.")
             else:
@@ -59,10 +58,10 @@ def validity():
                     isint = int(i)
                 except:
                     errors.append("The receipt number must be an integer.")
-        elif index == 4:
+        elif index == 3:
             if i == "Select an option":
                 errors.append("You must select an item being hired.")
-        elif index == 5:
+        elif index == 4:
             if i == "":
                 errors.append("You cannot leave the number of items hired blank.")
             else:
@@ -94,7 +93,6 @@ def error():
         
 
 def reset():
-    order.delete(0, END)
     hire.delete(0,END)
     name.delete(0,END)
     receipt.delete(0, END)
@@ -112,7 +110,7 @@ def entered():
     if errors == [] and answer:
         info.append(
             [btn, [
-                Label(frame2, text=order.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=order.cget("text"), font=(("Gorgia"), 14)),
                  Label(frame2, text=hire.get(), font=(("Gorgia"), 14)),
                 Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
                 Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
@@ -217,11 +215,10 @@ ditem = Label(frame1, text="Item hired", font=(("Gorgia"), 14))
 dreceipt = Label(frame1, text="Receipt", font=(("Gorgia"), 14))
 dnum = Label(frame1, text="Item amount", font=(("Gorgia"), 14))
 
-#Creating entry boxes
-order = Entry(frame1, font=(("Gorgia"), 14), width=12)
-order.insert(0, "DD/MM/YY")   #Entry box will contain text
+#Creating entry boxes and label for date grab
+order = Label(frame1, text=f"{date:%d, %B, %Y}", font=(("Gorgia"), 14))
 hire = Entry(frame1, font=(("Gorgia"), 14), width=12)
-hire.insert(0, "DD/MM/YY")
+hire.insert(0, "DD/MM/YY")  #Inserted into entry
 name = Entry(frame1, font=(("Gorgia"), 14), width=12)
 receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
 num = Entry(frame1, font=(("Gorgia"), 14), width=12)

@@ -7,18 +7,19 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import askyesno #Allows confirmation to happen
 import datetime as dt
+from tkcalendar import Calendar
 
 #main window
 root = Tk()
 
-#setting up frames (creation and placement)
+#setting up frames (creation and placement) and canvases
 frame1 = Frame(root)
 frame1.place(x= 0,y= 0)
 for i in range(0, 7):
     frame1.columnconfigure(i, minsize=150)
 
 frame2 = Frame(root)
-frame2.place(x=0, y=200)
+frame2.place(x=0, y=250)
 for i in range(0, 8):
     frame2.columnconfigure(i, minsize=150)
 
@@ -41,16 +42,13 @@ def confirm(button):
 
 def validity():
     #Add max characters for inputs
-    checking = [ hire.get(), name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
+    checking = [ name.get(), receipt.get(), clicked.get(), num.get()]   #Values inputed that need to be checked
     index = 0
     for i in checking:       
         if index == 0:
-            if i == "DD/MM/YY":
-                errors.append("You must include the date they want the item (hire date).")
-        elif index == 1:
             if i == "":
                 errors.append("You cannot leave the name blank.")
-        elif index == 2:
+        elif index == 1:
             if i == "":
                 errors.append("You cannot leave the receipt number blank.")
             else:
@@ -58,10 +56,10 @@ def validity():
                     isint = int(i)
                 except:
                     errors.append("The receipt number must be an integer.")
-        elif index == 3:
+        elif index == 2:
             if i == "Select an option":
                 errors.append("You must select an item being hired.")
-        elif index == 4:
+        elif index == 3:
             if i == "":
                 errors.append("You cannot leave the number of items hired blank.")
             else:
@@ -93,7 +91,7 @@ def error():
         
 
 def reset():
-    hire.delete(0,END)
+    hire.selection_set(date.today())
     name.delete(0,END)
     receipt.delete(0, END)
     num.delete(0, END)
@@ -111,7 +109,7 @@ def entered():
         info.append(
             [btn, [
                 Label(frame2, text=order.cget("text"), font=(("Gorgia"), 14)),
-                 Label(frame2, text=hire.get(), font=(("Gorgia"), 14)),
+                Label(frame2, text=hire.get_date(), font=(("Gorgia"), 14)),
                 Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
                 Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
                 Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
@@ -215,10 +213,9 @@ ditem = Label(frame1, text="Item hired", font=(("Gorgia"), 14))
 dreceipt = Label(frame1, text="Receipt", font=(("Gorgia"), 14))
 dnum = Label(frame1, text="Item amount", font=(("Gorgia"), 14))
 
-#Creating entry boxes and label for date grab
-order = Label(frame1, text=f"{date:%d, %B, %Y}", font=(("Gorgia"), 14))
-hire = Entry(frame1, font=(("Gorgia"), 14), width=12)
-hire.insert(0, "DD/MM/YY")  #Inserted into entry
+#Creating entry boxes and label for date grab and calendar
+order = Label(frame1, text=f"{date:%d, %B, %Y}", font=(("Gorgia"), 14)) #Text gotten from date which was defined at the top of page
+hire = Calendar(frame1, slectmode="day", font=(("Gorgia"), 6), date_pattern='dd/MM/yyyy', mindate= date)    #The date chosen cannot be before the current date
 name = Entry(frame1, font=(("Gorgia"), 14), width=12)
 receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
 num = Entry(frame1, font=(("Gorgia"), 14), width=12)
@@ -232,7 +229,7 @@ dropdown = OptionMenu(frame1, clicked, *droplist)
 #placing all the labels
 title.grid(row=0, column=3, columnspan=2)
 lblorder.grid(row=1, column=0, sticky=W)
-lblhire.grid(row=1, column=2, sticky=W)
+lblhire.grid(row=1, column=4, sticky=W+E)
 lblname.grid(row=2, column=0, sticky=W)
 lblitem.grid(row=2, column=2, sticky=W)
 lblreceipt.grid(row=3, column=0, sticky=W)
@@ -247,7 +244,7 @@ dnum.grid(row=5, column=5, sticky=W)
 
 #Placeing the entry boxes
 order.grid(row=1, column=1, sticky=W)
-hire.grid(row=1, column=3, sticky=W)
+hire.grid(row=2, column=4, rowspan=3)
 name.grid(row=2, column=1, sticky=W)
 receipt.grid(row=3,column=1, sticky=W)
 num.grid(row=3, column=3, sticky=W)
@@ -258,5 +255,5 @@ enter.grid(row=4, column=6, sticky=W)
 #placeing dropdown list
 dropdown.grid(row=2, column=3, sticky=W)
 
-root.geometry("2000x700")
+root.geometry("1200x600")
 root.mainloop()

@@ -23,6 +23,11 @@ frame2.place(x=0, y=250)
 for i in range(0, 8):
     frame2.columnconfigure(i, minsize=150)
 
+#Scroll bar for list and canvas it's stored in
+#scroll = Scrollbar(frame2)
+#scroll.grid(row=0, column=5)
+
+
 #Variables and lists (global)
 #Items for hire (drop list)
 droplist = ["Select an option", "Tables", "Chairs", "Plates", "String lights", "Cutlery", "Plates", "Bowls"]
@@ -31,6 +36,7 @@ clicked.set(droplist[0])
 identify = -1    #For indentifying which group (-1 so that id = row)
 info = []   #List for information
 errors = []
+hasup = 0   #Used for checking whether or not the update button needs to be removed
 #Current date
 date = dt.datetime.now()
 
@@ -125,44 +131,39 @@ def entered():
             info[-1][1][y].grid(row=len(info), column=y, sticky=W)
         #Resets all inputs
         reset()
-        order.insert(0, "DD/MM/YY") 
-        hire.insert(0, "DD/MM/YY")
     elif errors != [] and answer:
         error() #This is the pop up window function which will show the errors in the inputs
 
 def updated(p):
     validity()
+    global hasup
     confirm("update")
     if errors == [] and answer:
-        #This will update the list
-        info[p][1][0].config(text = order.get())
-        info[p][1][1].config(text = hire.get())
+        #This will update the list, order date never changes as its not a most recent update function
+        info[p][1][1].config(text = hire.get_date())
         info[p][1][2].config(text = name.get())
         info[p][1][3].config(text = receipt.get())
         info[p][1][4].config(text = clicked.get())
         info[p][1][5].config(text = num.get())
         reset()
-        order.insert(0, "DD/MM/YY")
-        hire.insert(0, "DD/MM/YY")
         update.destroy()
         enter.grid(row=4, column=6, sticky=W)
+        hasup -= 1
     elif errors != []:
         error()
 
 def edit(e):
     #This will allow Julie to edit the orders she's already logged
+    global hasup
     reset()
     for y,x in enumerate(info):
         if x[0] == e:
             i = y
-            print(i)
     toedit = [] #Stores all the inputed values from list
     #This gives the previously inputed values
     for y in range(0, 6):
         toedit.append(info[i][1][y].cget("text"))
     #This places previously inputed values into the entry boxes and drop down list
-    order.insert(0, toedit[0])
-    hire.insert(0, toedit[1])
     name.insert(0, toedit[2])
     receipt.insert(0, toedit[3])
     clicked.set(toedit[4])
@@ -172,27 +173,31 @@ def edit(e):
     global update
     update = Button(frame1, text="Update", font=(("Gorgia"), 14), bg="Yellow", command=lambda: updated(i))
     update.grid(row=4, column=6, sticky=W)
+    hasup += 1
 
 def returned(r):
     #This will allow Jullie to return (and as such delete) orders
+    global hasup
     confirm("reutrn")
     if answer:
         #Ensures the program still functions if you return what you're trying to edit
-        update.gridforget()
-        enter.grid(row=4, column=6, sticky=W)
+        if hasup == 1:
+            global update
+            update.destroy()
+            hasup -= 1
+            enter.grid(row=4, column=6, sticky=W)
         reset()
-        order.insert(0, "DD/MM/YY") 
-        hire.insert(0, "DD/MM/YY")
         back = int(r)   #This is to make the number an integer
         for i in info:
             index = info.index(i)   #This gets the index of the current group
             if back == i[0]:
                 for a in range(0, 8):
                     info[index][1][a].destroy() #This destroys the desired index 
-        del info[back]     #Deletes the group from the list
+                del info[index]     #Deletes the group from the list
+                break
         #Moves all labels into correct positions
         for y in range(len(info)):
-            if back <= y:
+            if index <= y:
                 for t in range(len(info[-1][1])):
                     info[y][1][t].grid(row=y + 1, column=t, sticky=W)
 

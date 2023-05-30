@@ -84,9 +84,13 @@ def validity():
         if index == 0:
             if i == "":
                 errors.append("You cannot leave the name blank.")
+            elif len(i) > 14:
+                errors.append("You cannot enter in more then 14 characters for the name.")
         elif index == 1:
             if i == "":
                 errors.append("You cannot leave the receipt number blank.")
+            elif len(i) > 14:
+                errors.append("You cannot enter in more then 14 characters for the receipt.")
             else:
                 try:
                     isint = int(i)
@@ -265,9 +269,9 @@ dnum = Label(frame1, text="Item amount", font=(("Gorgia"), 14))
 #Creating entry boxes and label for date grab and calendar
 order = Label(frame1, text=f"{date:%d %B %Y}", font=(("Gorgia"), 14)) #Text gotten from date which was defined at the top of page
 hire = Calendar(frame1, slectmode="day", font=(("Gorgia"), 6), date_pattern='dd/MM/yyyy', mindate= date)    #The date chosen cannot be before the current date
-name = Entry(frame1, font=(("Gorgia"), 14), width=12)
-receipt = Entry(frame1, font=(("Gorgia"), 14), width=12)
-num = Entry(frame1, font=(("Gorgia"), 14), width=12)
+name = Entry(frame1, font=(("Gorgia"), 14), width=14)
+receipt = Entry(frame1, font=(("Gorgia"), 14), width=14)
+num = Entry(frame1, font=(("Gorgia"), 14), width=14)
 
 #Creating button
 enter = Button(frame1, text="Enter", font=(("Gorgia"), 14), bg="Green", command=entered)

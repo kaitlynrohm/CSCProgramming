@@ -14,18 +14,31 @@ root = Tk()
 
 #setting up frames (creation and placement) and canvases
 frame1 = Frame(root)
-frame1.place(x= 0,y= 0)
+frame1.place(x= 10,y= 0)
 for i in range(0, 7):
     frame1.columnconfigure(i, minsize=150)
 
-frame2 = Frame(root)
+frame2 = Frame(root, height=300, width=1100)
 frame2.place(x=0, y=250)
 for i in range(0, 8):
     frame2.columnconfigure(i, minsize=150)
 
+#Canvas for scroll bar
+can = Canvas(frame2, height=300, width=1200)
+can.pack(side=LEFT, fill=BOTH, expand=True)
+
+#Frame for scroll bar
+frame3 = Frame(can)
+can.create_window(10, 0, window=frame3, anchor=NW, width=1200)
+#Will make the column length constant for the canvas
+for i in range(0, 8):
+    frame3.columnconfigure(i, minsize=150)
+
 #Scroll bar for list and canvas it's stored in
-#scroll = Scrollbar(frame2)
-#scroll.grid(row=0, column=5)
+scroll = Scrollbar(frame2, orient="vertical", command=can.yview)
+scroll.pack(side=RIGHT, fill=Y)
+#Connects scroll to canvas
+can.config(yscrollcommand=scroll.set)
 
 
 #Variables and lists (global)
@@ -41,6 +54,11 @@ hasup = 0   #Used for checking whether or not the update button needs to be remo
 date = dt.datetime.now()
 
 #Functions
+def updatescroll():
+    #For updateing scroll region
+    can.update_idletasks()
+    can.config(scrollregion=frame3.bbox())
+
 def confirm(button):
     #This double checks with the user whether or not they want to go through with an action
     global answer
@@ -82,7 +100,7 @@ def validity():
 def error():
     #This is a pop up window that shows all of the errors
     top = Toplevel(root)
-    top.geometry("500x350")
+    #top.geometry("500x350")
     title = Label(top, text="Your entry has the following errors", font=(("Gorgia"),18), bg="Yellow")
     title.grid(row=0, column=0, sticky=W+E) #Griding a title
     global errors
@@ -95,7 +113,6 @@ def error():
     ok.grid(row= 10, column=0)
     errors = []
         
-
 def reset():
     hire.selection_set(date.today())
     name.delete(0,END)
@@ -114,14 +131,14 @@ def entered():
     if errors == [] and answer:
         info.append(
             [btn, [
-                Label(frame2, text=order.cget("text"), font=(("Gorgia"), 14)),
-                Label(frame2, text=hire.get_date(), font=(("Gorgia"), 14)),
-                Label(frame2, text=name.get(), font=(("Gorgia"), 14)),
-                Label(frame2, text=receipt.get(), font=(("Gorgia"), 14)),
-                Label(frame2, text=clicked.get(), font=(("Gorgia"), 14)),
-                Label(frame2, text=num.get(), font=(("Gorgia"), 14)),
-                Button(frame2, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
-                    Button(frame2, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: returned(g))
+                Label(frame3, text=order.cget("text"), font=(("Gorgia"), 14)),
+                Label(frame3, text=hire.get_date(), font=(("Gorgia"), 14)),
+                Label(frame3, text=name.get(), font=(("Gorgia"), 14)),
+                Label(frame3, text=receipt.get(), font=(("Gorgia"), 14)),
+                Label(frame3, text=clicked.get(), font=(("Gorgia"), 14)),
+                Label(frame3, text=num.get(), font=(("Gorgia"), 14)),
+                Button(frame3, text="Edit", font=(("Gorgia"), 14), bg="Orange", command=lambda c=btn: edit(c)),
+                    Button(frame3, text="Returned", font=(("Gorgia"), 14), bg="Red", command=lambda g=btn: returned(g))
                 #The buttons each place btn (indentifier) into a variable to use in edit and return. (identifies it)
                 ]
             ]
@@ -129,6 +146,8 @@ def entered():
         #Putting everything on the grid
         for y in range(len(info[-1][1])):
             info[-1][1][y].grid(row=len(info), column=y, sticky=W)
+        #Updtaes scroll region
+        updatescroll()
         #Resets all inputs
         reset()
     elif errors != [] and answer:
@@ -164,6 +183,7 @@ def edit(e):
     for y in range(0, 6):
         toedit.append(info[i][1][y].cget("text"))
     #This places previously inputed values into the entry boxes and drop down list
+    hire.selection_set(toedit[1])
     name.insert(0, toedit[2])
     receipt.insert(0, toedit[3])
     clicked.set(toedit[4])
@@ -200,6 +220,8 @@ def returned(r):
             if index <= y:
                 for t in range(len(info[-1][1])):
                     info[y][1][t].grid(row=y + 1, column=t, sticky=W)
+        #Updtaes scroll region
+        updatescroll()
 
 #Creating constant labels and giving the page a title
 root.title("Julie's Party Hire")
@@ -249,7 +271,7 @@ dnum.grid(row=5, column=5, sticky=W)
 
 #Placeing the entry boxes
 order.grid(row=1, column=1, sticky=W)
-hire.grid(row=2, column=4, rowspan=3)
+hire.grid(row=2, column=4, rowspan=3, columnspan=2)
 name.grid(row=2, column=1, sticky=W)
 receipt.grid(row=3,column=1, sticky=W)
 num.grid(row=3, column=3, sticky=W)
@@ -260,5 +282,5 @@ enter.grid(row=4, column=6, sticky=W)
 #placeing dropdown list
 dropdown.grid(row=2, column=3, sticky=W)
 
-root.geometry("1200x600")
+root.geometry("1300x600")
 root.mainloop()
